@@ -50,7 +50,9 @@ abstract contract Initializable {
         // If the contract is initializing we ignore whether _initialized is set in order to support multiple
         // inheritance patterns, but we only do this in the context of a constructor, because in other contexts the
         // contract may have been reentered.
-        require(_initializing ? _isConstructor() : !_initialized, "Initializable: contract is already initialized");
+        if(_initializing ? !_isConstructor() : _initialized) {
+            revert ContractAlreadyInitialized();    
+        }
 
         bool isTopLevelCall = !_initializing;
         if (isTopLevelCall) {
@@ -70,11 +72,16 @@ abstract contract Initializable {
      * {initializer} modifier, directly or indirectly.
      */
     modifier onlyInitializing() {
-        require(_initializing, "Initializable: contract is not initializing");
+        if(!_initializing) {
+            revert ContractNotInitialized();
+        }
         _;
     }
 
     function _isConstructor() private view returns (bool) {
         return !AddressUpgradeable.isContract(address(this));
     }
+
+    error ContractNotInitialized();
+    error ContractAlreadyInitialized();
 }
