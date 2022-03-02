@@ -54,7 +54,7 @@ abstract contract ReentrancyGuardUpgradeable is Initializable {
      */
     modifier nonReentrant() {
         // On the first call to nonReentrant, _notEntered will be true
-        require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
+        if(_status == _ENTERED) revert ReentrancyGuardReentrantCall();
 
         // Any calls to nonReentrant after this point will fail
         _status = _ENTERED;
@@ -72,4 +72,5 @@ abstract contract ReentrancyGuardUpgradeable is Initializable {
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
     uint256[49] private __gap;
+    error ReentrancyGuardReentrantCall();
 }
