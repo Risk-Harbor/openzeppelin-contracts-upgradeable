@@ -58,10 +58,10 @@ library AddressUpgradeable {
      * https://solidity.readthedocs.io/en/v0.5.11/security-considerations.html#use-the-checks-effects-interactions-pattern[checks-effects-interactions pattern].
      */
     function sendValue(address payable recipient, uint256 amount) internal {
-        require(address(this).balance >= amount, "Address: insufficient balance");
+        if(address(this).balance < amount) revert AddressInsufficientBalance();
 
         (bool success, ) = recipient.call{value: amount}("");
-        require(success, "Address: unable to send value, recipient may have reverted");
+        if(!success) revert AddressUnableToSendValue();
     }
 
     /**
@@ -131,8 +131,8 @@ library AddressUpgradeable {
         uint256 value,
         string memory errorMessage
     ) internal returns (bytes memory) {
-        require(address(this).balance >= value, "Address: insufficient balance for call");
-        require(isContract(target), "Address: call to non-contract");
+        if(address(this).balance < value) revert AddressInsufficientBalanceForCall();
+        if(!isContract(target)) revert AddressCallToNonContract();
 
         (bool success, bytes memory returndata) = target.call{value: value}(data);
         return verifyCallResult(success, returndata, errorMessage);
@@ -159,7 +159,7 @@ library AddressUpgradeable {
         bytes memory data,
         string memory errorMessage
     ) internal view returns (bytes memory) {
-        require(isContract(target), "Address: static call to non-contract");
+        if(!isContract(target)) revert AddressStaticCallToNonContract();
 
         (bool success, bytes memory returndata) = target.staticcall(data);
         return verifyCallResult(success, returndata, errorMessage);
@@ -192,4 +192,10 @@ library AddressUpgradeable {
             }
         }
     }
+
+    error AddressInsufficientBalance();
+    error AddressUnableToSendValue();
+    error AddressInsufficientBalanceForCall();
+    error AddressCallToNonContract();
+    error AddressStaticCallToNonContract();
 }
