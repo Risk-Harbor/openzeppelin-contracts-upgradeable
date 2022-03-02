@@ -61,7 +61,9 @@ library StringsUpgradeable {
             buffer[i] = _HEX_SYMBOLS[value & 0xf];
             value >>= 4;
         }
-        require(value == 0, "Strings: hex length insufficient");
+        if(value != 0) revert StringHexLengthInsufficient();
         return string(buffer);
     }
+
+    error StringHexLengthInsufficient();
 }
