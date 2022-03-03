@@ -50,9 +50,8 @@ abstract contract Initializable {
         // If the contract is initializing we ignore whether _initialized is set in order to support multiple
         // inheritance patterns, but we only do this in the context of a constructor, because in other contexts the
         // contract may have been reentered.
-        if(_initializing ? !_isConstructor() : _initialized) {
-            revert ContractAlreadyInitialized();    
-        }
+        if(_initialized && ( !_initializing || !_isConstructor())) revert ContractAlreadyInitialized();
+
 
         bool isTopLevelCall = !_initializing;
         if (isTopLevelCall) {
