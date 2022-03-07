@@ -45,7 +45,7 @@ abstract contract OwnableUpgradeable is Initializable, ContextUpgradeable {
      * @dev Throws if called by any account other than the owner.
      */
     modifier onlyOwner() {
-        require(owner() == _msgSender(), "Ownable: caller is not the owner");
+        if(owner() != _msgSender()) revert OwnableCallerIsNotOwner();
         _;
     }
 
@@ -65,7 +65,7 @@ abstract contract OwnableUpgradeable is Initializable, ContextUpgradeable {
      * Can only be called by the current owner.
      */
     function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(newOwner != address(0), "Ownable: new owner is the zero address");
+        if(newOwner == address(0)) revert OwnableNewOwnerIsZeroAddr();
         _transferOwnership(newOwner);
     }
 
@@ -85,4 +85,6 @@ abstract contract OwnableUpgradeable is Initializable, ContextUpgradeable {
      * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
      */
     uint256[49] private __gap;
+    error OwnableCallerIsNotOwner();
+    error OwnableNewOwnerIsZeroAddr();
 }
